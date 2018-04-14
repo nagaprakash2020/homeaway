@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">HomeAlone</string>
+    <string name="title_activity_search">SearchActivity</string>
+    <string name="location">%1$s, %2$s</string>
+</resources>
