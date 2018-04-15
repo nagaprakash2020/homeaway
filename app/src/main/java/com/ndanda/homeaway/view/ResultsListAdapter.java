@@ -56,14 +56,13 @@ public class ResultsListAdapter extends ArrayAdapter<events> {
 
         ResultsViewHolder viewHolder;
 
-        if(convertView == null){
-            LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-            convertView = layoutInflater.inflate(R.layout.results_row,null);
+        if(convertView == null){
             ResultsRowBinding resultsRowBinding = DataBindingUtil
                     .inflate(LayoutInflater.from(parent.getContext()), R.layout.results_row,
                             parent, false);
             viewHolder = new ResultsViewHolder(resultsRowBinding);
+            convertView = resultsRowBinding.getRoot();
             convertView.setTag(viewHolder);
         }else {
             viewHolder = (ResultsViewHolder) convertView.getTag();
@@ -72,26 +71,6 @@ public class ResultsListAdapter extends ArrayAdapter<events> {
         events event = getItem(position);
 
         viewHolder.setEvent(event);
-
-        if(event.getPerformers() != null && event.getPerformers().get(0) != null && event.getPerformers().get(0).getImage() != null){
-
-//            Glide.with(viewHolder.imageView.getContext())
-//                    .load(event.getPerformers().get(0).getImage())
-//                    .listener(new RequestListener<Drawable>() {
-//                        @Override
-//                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-//                            viewHolder.imageView.setImageDrawable(viewHolder.imageView.getContext().getResources().getDrawable(R.drawable.ic_launcher_background));
-//                            return false;
-//                        }
-//
-//                        @Override
-//                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-//                            viewHolder.imageView.setImageDrawable(resource);
-//                            return false;
-//                        }
-//                    })
-//                    .into(viewHolder.imageView);
-        }
 
         return convertView;
     }

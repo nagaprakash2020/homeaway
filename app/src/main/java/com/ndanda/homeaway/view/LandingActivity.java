@@ -36,7 +36,6 @@ public class LandingActivity extends AppCompatActivity implements ResultsListAda
                 .inject(this);
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_landing);
         activityLandingBinding = DataBindingUtil.setContentView(this,R.layout.activity_landing);
 
         resultsViewModel = ViewModelProviders.of(this,viewModelFactory).get(ResultsViewModel.class);
