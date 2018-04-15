@@ -32,7 +32,8 @@
                 android:layout_toEndOf="@+id/event_image"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:text="@{event.getTitle()}"/>
 
             <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/event_venue"
@@ -44,7 +45,8 @@
                 android:layout_below="@+id/event_title"
                 android:paddingTop="5dp"
                 android:paddingStart="10dp"
-                android:paddingEnd="10dp"/>
+                android:paddingEnd="10dp"
+                android:text="@{event.getVenue().getCity()}"/>
 
         </RelativeLayout>
 

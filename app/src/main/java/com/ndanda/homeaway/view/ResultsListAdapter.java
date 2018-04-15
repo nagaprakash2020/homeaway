@@ -2,25 +2,15 @@ package com.ndanda.homeaway.view;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
-import android.support.v7.widget.AppCompatImageView;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
-import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.ndanda.homeaway.R;
 import com.ndanda.homeaway.data.events;
 import com.ndanda.homeaway.databinding.ResultsRowBinding;
@@ -29,8 +19,8 @@ import java.util.List;
 
 public class ResultsListAdapter extends ArrayAdapter<events> {
 
-    List<events> eventsList;
-    ResultsListAdapterListener listener;
+    private List<events> eventsList;
+    private ResultsListAdapterListener listener;
 
     public interface ResultsListAdapterListener{
         void onTextChanged(String text);
@@ -73,11 +63,7 @@ public class ResultsListAdapter extends ArrayAdapter<events> {
             ResultsRowBinding resultsRowBinding = DataBindingUtil
                     .inflate(LayoutInflater.from(parent.getContext()), R.layout.results_row,
                             parent, false);
-//            viewHolder = new ResultsViewHolder(resultsRowBinding);
-            viewHolder = new ResultsViewHolder();
-            viewHolder.title = convertView.findViewById(R.id.event_title);
-            viewHolder.location = convertView.findViewById(R.id.event_venue);
-            viewHolder.imageView = convertView.findViewById(R.id.event_image);
+            viewHolder = new ResultsViewHolder(resultsRowBinding);
             convertView.setTag(viewHolder);
         }else {
             viewHolder = (ResultsViewHolder) convertView.getTag();
@@ -85,30 +71,27 @@ public class ResultsListAdapter extends ArrayAdapter<events> {
 
         events event = getItem(position);
 
-        viewHolder.location.setText(String.format(getContext().getString(R.string.location),event.getVenue().getCity(),event.getVenue().getState()));
-        viewHolder.title.setText(event.getTitle());
+        viewHolder.setEvent(event);
 
         if(event.getPerformers() != null && event.getPerformers().get(0) != null && event.getPerformers().get(0).getImage() != null){
 
-            Glide.with(viewHolder.imageView.getContext())
-                    .load(event.getPerformers().get(0).getImage())
-                    .listener(new RequestListener<Drawable>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                            viewHolder.imageView.setImageDrawable(viewHolder.imageView.getContext().getResources().getDrawable(R.drawable.ic_launcher_background));
-                            return false;
-                        }
-
-                        @Override
-                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                            viewHolder.imageView.setImageDrawable(resource);
-                            return false;
-                        }
-                    })
-                    .into(viewHolder.imageView);
+//            Glide.with(viewHolder.imageView.getContext())
+//                    .load(event.getPerformers().get(0).getImage())
+//                    .listener(new RequestListener<Drawable>() {
+//                        @Override
+//                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+//                            viewHolder.imageView.setImageDrawable(viewHolder.imageView.getContext().getResources().getDrawable(R.drawable.ic_launcher_background));
+//                            return false;
+//                        }
+//
+//                        @Override
+//                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+//                            viewHolder.imageView.setImageDrawable(resource);
+//                            return false;
+//                        }
+//                    })
+//                    .into(viewHolder.imageView);
         }
-
-//        viewHolder.setEvent(event);
 
         return convertView;
     }
@@ -129,19 +112,17 @@ public class ResultsListAdapter extends ArrayAdapter<events> {
         return eventsList.get(position);
     }
 
-    public static class ResultsViewHolder{
+    public static class ResultsViewHolder extends RecyclerView.ViewHolder{
 
-        TextView title;
-        TextView location;
-        AppCompatImageView imageView;
-//        final ResultsRowBinding resultsRowBinding;
+        ResultsRowBinding resultsRowBinding;
 
-//        public ResultsViewHolder(ResultsRowBinding resultsRowBinding) {
-//            this.resultsRowBinding = resultsRowBinding;
-//        }
+        public ResultsViewHolder(ResultsRowBinding resultsRowBinding) {
+            super(resultsRowBinding.getRoot());
+            this.resultsRowBinding = resultsRowBinding;
+        }
 
-//        public void setEvent(events event){
-//            resultsRowBinding.setEvent(event);
-//        }
+        public void setEvent(events event){
+            resultsRowBinding.setEvent(event);
+        }
     }
 }
