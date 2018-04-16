@@ -18,8 +18,6 @@ public class RateLimiter<KEY> {
 
     public synchronized boolean shouldFetch(KEY key) {
 
-        //TODO instead of using the instance variable timestamps.
-        //TODO This needs to be replaced with a shared preferences values.
         Long lastFetched = timestamps.get(key);
         long now = now();
         if (lastFetched == null) {

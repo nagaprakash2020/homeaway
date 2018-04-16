@@ -8,6 +8,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class events implements Parcelable{
@@ -38,6 +39,8 @@ public class events implements Parcelable{
     private String shortTitle;
     private String datetimeUtc;
     private boolean datetimeTbd;
+    @Ignore
+    private boolean favorite;
 
     public events(){}
 
@@ -192,6 +195,8 @@ public class events implements Parcelable{
     public void setDatetimeTbd(boolean input){
         this.datetimeTbd = input;
     }
+    public boolean getFavorite(){return this.favorite;}
+    public void setFavorite(boolean favorite){this.favorite = favorite;}
 
     @Override
     public int describeContents() {
@@ -214,5 +219,24 @@ public class events implements Parcelable{
         dest.writeString(shortTitle);
         dest.writeString(datetimeUtc);
         dest.writeByte((byte) (datetimeTbd ? 1 : 0));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        events events = (events) o;
+
+        return id == events.id;
+    }
+
+    @Override
+    public int hashCode() {
+
+        int result = 17;
+        result = 31 * result + this.id;
+
+        return result;
     }
 }

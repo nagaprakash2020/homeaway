@@ -15,8 +15,11 @@ import com.ndanda.homeaway.databinding.FragmentResultDetailBinding;
 public class ResultDetailFragment extends Fragment implements View.OnClickListener{
 
     private events event;
+    private String searchString;
     private ResultsDetailFragmentListener mListener;
     private FragmentResultDetailBinding fragmentResultDetailBinding;
+
+    private static final String SEARCH_STRING = "SearchString";
 
     public interface ResultsDetailFragmentListener{
         void onFavoriteAdded(events events);
@@ -27,10 +30,11 @@ public class ResultDetailFragment extends Fragment implements View.OnClickListen
         // Required empty public constructor
     }
 
-    public static ResultDetailFragment newInstance(events event) {
+    public static ResultDetailFragment newInstance(events event,String searchString) {
         ResultDetailFragment fragment = new ResultDetailFragment();
         Bundle args = new Bundle();
         args.putParcelable(events.class.getName(), event);
+        args.putString(SEARCH_STRING,searchString);
         fragment.setArguments(args);
         return fragment;
     }
@@ -40,6 +44,7 @@ public class ResultDetailFragment extends Fragment implements View.OnClickListen
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             event = getArguments().getParcelable(events.class.getName());
+            searchString = getArguments().getString(SEARCH_STRING);
         }
     }
 
@@ -47,7 +52,10 @@ public class ResultDetailFragment extends Fragment implements View.OnClickListen
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         fragmentResultDetailBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_result_detail,container,false);
+
         fragmentResultDetailBinding.setEvent(event);
+        fragmentResultDetailBinding.setSearchString(searchString);
+        fragmentResultDetailBinding.favorite.setSelected(event.getFavorite());
         fragmentResultDetailBinding.favorite.setOnClickListener(this);
         return fragmentResultDetailBinding.getRoot();
     }
@@ -64,6 +72,11 @@ public class ResultDetailFragment extends Fragment implements View.OnClickListen
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
     }
@@ -72,9 +85,11 @@ public class ResultDetailFragment extends Fragment implements View.OnClickListen
     public void onClick(View v) {
         if(!fragmentResultDetailBinding.favorite.isSelected()){
             fragmentResultDetailBinding.favorite.setSelected(true);
+            event.setFavorite(true);
             mListener.onFavoriteAdded(event);
         }else {
             fragmentResultDetailBinding.favorite.setSelected(false);
+            event.setFavorite(false);
             mListener.onFavoriteRemoved(event);
         }
 

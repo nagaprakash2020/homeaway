@@ -24,7 +24,6 @@ public class SearchFragment extends Fragment implements ResultsAdapter.ResultsCl
     private OnSearchFragmentInteractionListener mListener;
     FragmentSearchBinding fragmentSearchBinding;
     ResultsAdapter resultsAdapter;
-    List<events> eventsList;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -69,6 +68,7 @@ public class SearchFragment extends Fragment implements ResultsAdapter.ResultsCl
     @Override
     public void onResume() {
         super.onResume();
+        updateSearchResults();
     }
 
     @Override
@@ -83,9 +83,9 @@ public class SearchFragment extends Fragment implements ResultsAdapter.ResultsCl
     }
 
 
-    public void updateSearchResults(List<events> eventsList){
-        this.eventsList = eventsList;
-        resultsAdapter.setEventsList(eventsList);
+    public void updateSearchResults(){
+        if(getActivity() != null)
+            resultsAdapter.setEventsList(((LandingActivity)getActivity()).events);
     }
 
     @Override
@@ -104,7 +104,6 @@ public class SearchFragment extends Fragment implements ResultsAdapter.ResultsCl
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnSearchFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onSearchStringUpdated(String searchString);
         void onSearchItemResultSelected(events event);
     }
@@ -122,7 +121,8 @@ public class SearchFragment extends Fragment implements ResultsAdapter.ResultsCl
 
         @Override
         public void afterTextChanged(Editable s) {
-            mListener.onSearchStringUpdated(s.toString());
+            if(mListener != null)
+                mListener.onSearchStringUpdated(s.toString());
         }
     }
 }

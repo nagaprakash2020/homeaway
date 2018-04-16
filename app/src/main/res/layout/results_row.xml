@@ -3,10 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="android.view.View"/>
         <variable
             name="event"
             type="com.ndanda.homeaway.data.events"/>
     </data>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,29 +23,38 @@
 
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/event_title"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
             android:layout_alignEnd="@+id/event_image"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="33dp"
             android:layout_toEndOf="@+id/event_image"
-            android:paddingStart="10dp"
             android:paddingEnd="10dp"
-            android:textStyle="bold"
-            android:text="@{event.title}"/>
+            android:paddingStart="10dp"
+            android:text="@{event.title}"
+            android:textStyle="bold" />
 
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/event_venue"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/event_image"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/event_title"
+            android:layout_marginEnd="33dp"
+            android:layout_toEndOf="@+id/event_image"
+            android:paddingEnd="10dp"
+            android:paddingStart="10dp"
+            android:paddingTop="5dp"
+            android:text="@{@string/location(event.venue.city,event.venue.state)}" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_alignEnd="@+id/event_image"
-            android:layout_toEndOf="@+id/event_image"
-            android:layout_below="@+id/event_title"
-            android:paddingTop="5dp"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:text="@{event.venue.city}"/>
+            android:visibility="@{event.favorite ? View.VISIBLE: View.GONE}"
+            android:src="@drawable/ic_star_selected" />
 
     </RelativeLayout>
 </layout>

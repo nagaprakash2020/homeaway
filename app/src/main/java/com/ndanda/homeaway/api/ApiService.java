@@ -14,7 +14,6 @@ import retrofit2.http.Query;
 
 public interface ApiService {
 
-    //TODO how to make this better
     @GET("events")
     LiveData<ApiResponse<SeatGeekEvent>> getEvents(
             @Query("q") String searchString,

@@ -83,12 +83,6 @@ public class HomeAwayRepository {
     }
 
     public LiveData<List<events>> getFavoriteEvents(){
-
-        try{
-            Thread t = new Thread(() -> favouriteDao.getFavoriteEvents());
-            t.start();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        return favouriteDao.getFavoriteEvents();
     }
 }

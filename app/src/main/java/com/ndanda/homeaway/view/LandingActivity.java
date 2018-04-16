@@ -1,23 +1,20 @@
 package com.ndanda.homeaway.view;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import com.ndanda.homeaway.HomeAwayApplication;
 import com.ndanda.homeaway.R;
-import com.ndanda.homeaway.api.ApiResponse;
-import com.ndanda.homeaway.data.SeatGeekEvent;
 import com.ndanda.homeaway.data.events;
 import com.ndanda.homeaway.databinding.ActivityLandingBinding;
 import com.ndanda.homeaway.viewmodel.ResultsViewModel;
 
+import java.util.List;
 import java.util.Stack;
 
 import javax.inject.Inject;
@@ -32,6 +29,9 @@ ResultDetailFragment.ResultsDetailFragmentListener{
     ResultsViewModel resultsViewModel;
     SearchFragment searchFragment;
     private Stack<Fragment> fragmentStack;
+    public List<events> events;
+    private List<events> favoriteEvents;
+    private String currentSearchString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +51,7 @@ ResultDetailFragment.ResultsDetailFragmentListener{
     }
 
     private void getFavoriteEvents(){
-        resultsViewModel
+        resultsViewModel.getFavoriteEvents().observe(this, events -> favoriteEvents = events);
     }
 
     private void showSearchFragment() {
@@ -62,7 +62,7 @@ ResultDetailFragment.ResultsDetailFragmentListener{
         }
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.container, searchFragment,SearchFragment.class.getName());
+        fragmentTransaction.replace(R.id.container, searchFragment,SearchFragment.class.getName());
         fragmentStack.push(searchFragment);
         fragmentTransaction.commit();
     }
@@ -75,15 +75,24 @@ ResultDetailFragment.ResultsDetailFragmentListener{
     @Override
     public void onSearchStringUpdated(String searchString) {
 
+        this.currentSearchString = searchString;
         if(searchString == null || searchString.isEmpty()){
-            searchFragment.updateSearchResults(null);
+            if(events != null)
+                events.clear();
+            searchFragment.updateSearchResults();
         }else {
-            resultsViewModel.getSeatGeekEvent(searchString).observe(this, new Observer<ApiResponse<SeatGeekEvent>>() {
-                @Override
-                public void onChanged(@Nullable ApiResponse<SeatGeekEvent> seatGeekEventApiResponse) {
-                    if(seatGeekEventApiResponse != null && seatGeekEventApiResponse.body != null){
-                        searchFragment.updateSearchResults(seatGeekEventApiResponse.body.getEvents());
+            resultsViewModel.getSeatGeekEvent(searchString).observe(this, seatGeekEventApiResponse -> {
+                if(seatGeekEventApiResponse != null && seatGeekEventApiResponse.body != null){
+
+                    events = seatGeekEventApiResponse.body.getEvents();
+
+                    for(int i=0; i< events.size(); i++){
+                        if(favoriteEvents.contains(events.get(i))){
+                            events.get(i).setFavorite(true);
+                        }
                     }
+
+                    searchFragment.updateSearchResults();
                 }
             });
         }
@@ -92,7 +101,7 @@ ResultDetailFragment.ResultsDetailFragmentListener{
     @Override
     public void onSearchItemResultSelected(events event) {
 
-        ResultDetailFragment detailFragment = ResultDetailFragment.newInstance(event);
+        ResultDetailFragment detailFragment = ResultDetailFragment.newInstance(event,currentSearchString);
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.add(R.id.container, detailFragment,ResultDetailFragment.class.getName());
@@ -119,12 +128,26 @@ ResultDetailFragment.ResultsDetailFragmentListener{
     }
 
     @Override
-    public void onFavoriteAdded(events events) {
-        resultsViewModel.addEventToFavorite(events);
+    public void onFavoriteAdded(events event) {
+        updateCurrentList(event);
+
+        resultsViewModel.addEventToFavorite(event);
     }
 
     @Override
     public void onFavoriteRemoved(events event) {
+        updateCurrentList(event);
         resultsViewModel.removeEventFromFavorite(event);
+    }
+
+    private void updateCurrentList(events event) {
+        try{
+            int index = this.events.indexOf(event);
+            if(index >= 0){
+                this.events.set(index,event);
+            }
+        }catch (ClassCastException | NullPointerException e){
+            e.printStackTrace();
+        }
     }
 }
