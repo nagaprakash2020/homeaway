@@ -16,9 +16,11 @@ public class ResultDetailFragment extends Fragment implements View.OnClickListen
 
     private events event;
     private ResultsDetailFragmentListener mListener;
+    private FragmentResultDetailBinding fragmentResultDetailBinding;
 
     public interface ResultsDetailFragmentListener{
-        void onFavoriteClicked(events events);
+        void onFavoriteAdded(events events);
+        void onFavoriteRemoved(events events);
     }
 
     public ResultDetailFragment() {
@@ -44,7 +46,7 @@ public class ResultDetailFragment extends Fragment implements View.OnClickListen
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        FragmentResultDetailBinding fragmentResultDetailBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_result_detail,container,false);
+        fragmentResultDetailBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_result_detail,container,false);
         fragmentResultDetailBinding.setEvent(event);
         fragmentResultDetailBinding.favorite.setOnClickListener(this);
         return fragmentResultDetailBinding.getRoot();
@@ -68,6 +70,13 @@ public class ResultDetailFragment extends Fragment implements View.OnClickListen
 
     @Override
     public void onClick(View v) {
-        mListener.onFavoriteClicked(event);
+        if(!fragmentResultDetailBinding.favorite.isSelected()){
+            fragmentResultDetailBinding.favorite.setSelected(true);
+            mListener.onFavoriteAdded(event);
+        }else {
+            fragmentResultDetailBinding.favorite.setSelected(false);
+            mListener.onFavoriteRemoved(event);
+        }
+
     }
 }

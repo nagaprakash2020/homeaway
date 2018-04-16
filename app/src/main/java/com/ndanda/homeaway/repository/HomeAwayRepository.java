@@ -12,6 +12,8 @@ import com.ndanda.homeaway.data.SeatGeekEvent;
 import com.ndanda.homeaway.data.events;
 import com.ndanda.homeaway.vo.Resource;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 public class HomeAwayRepository {
@@ -66,6 +68,25 @@ public class HomeAwayRepository {
             Thread t = new Thread(() -> favouriteDao.insertFavoriteEvent(event));
             t.start();
 
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void removeEventFromFavorite(events event){
+        try{
+            Thread t = new Thread(() -> favouriteDao.removeEventFromFavorite(event));
+            t.start();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public LiveData<List<events>> getFavoriteEvents(){
+
+        try{
+            Thread t = new Thread(() -> favouriteDao.getFavoriteEvents());
+            t.start();
         }catch (Exception e){
             e.printStackTrace();
         }

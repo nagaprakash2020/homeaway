@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 
 import com.ndanda.homeaway.HomeAwayApplication;
 import com.ndanda.homeaway.R;
@@ -47,7 +46,12 @@ ResultDetailFragment.ResultsDetailFragmentListener{
 
         resultsViewModel = ViewModelProviders.of(this,viewModelFactory).get(ResultsViewModel.class);
 
+        getFavoriteEvents();
         showSearchFragment();
+    }
+
+    private void getFavoriteEvents(){
+        resultsViewModel
     }
 
     private void showSearchFragment() {
@@ -115,7 +119,12 @@ ResultDetailFragment.ResultsDetailFragmentListener{
     }
 
     @Override
-    public void onFavoriteClicked(events events) {
-        resultsViewModel.saveFavoriteEvent(events);
+    public void onFavoriteAdded(events events) {
+        resultsViewModel.addEventToFavorite(events);
+    }
+
+    @Override
+    public void onFavoriteRemoved(events event) {
+        resultsViewModel.removeEventFromFavorite(event);
     }
 }
