@@ -1,63 +1,75 @@
 package com.ndanda.homeaway.view;
 
+import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
 
+import com.ndanda.homeaway.R;
 import com.ndanda.homeaway.data.events;
+import com.ndanda.homeaway.databinding.ResultsRowBinding;
 
 import java.util.List;
 
-public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsViewHolder> implements Filterable{
+public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsViewHolder> {
 
-    List<events> eventsList;
+    private List<events> eventsList;
+    private Context context;
+    private ResultsClickListener resultsClickListener;
 
+    public interface ResultsClickListener{
+        void onResultItemClicked(events event);
+    }
 
+    public ResultsAdapter(@NonNull Context context,ResultsClickListener resultsClickListener) {
+        this.context = context;
+        this.resultsClickListener = resultsClickListener;
+    }
 
-    @NonNull
-    @Override
-    public Filter getFilter() {
-        return new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                FilterResults filterResults = new FilterResults();
-                if(constraint != null){
-                    return filterResults;
-                }
-                return null;
-            }
-
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-            }
-        };
+    public void setEventsList(List<events> eventsList){
+        this.eventsList = eventsList;
+        notifyDataSetChanged();
     }
 
     @NonNull
     @Override
     public ResultsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-//        ResultsRowBinding resultsBinding = DataBindingUtil.
+        return new ResultsViewHolder(DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.results_row, parent, false));
 
-        return null;
     }
 
     @Override
     public void onBindViewHolder(@NonNull ResultsViewHolder holder, int position) {
+        ResultsRowBinding resultsRowBinding = holder.resultsRowBinding;
 
+        resultsRowBinding.setEvent(eventsList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return eventsList == null || eventsList.isEmpty() ? 0 : eventsList.size();
     }
 
-    public class ResultsViewHolder extends RecyclerView.ViewHolder{
+    public class ResultsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-        public ResultsViewHolder(View itemView) {
-            super(itemView);
+        ResultsRowBinding resultsRowBinding;
+
+        public ResultsViewHolder(ResultsRowBinding resultsRowBinding) {
+            super(resultsRowBinding.getRoot());
+            this.resultsRowBinding = resultsRowBinding;
+            resultsRowBinding.getRoot().setOnClickListener(this);
+        }
+
+        public void setEvent(events event){
+            resultsRowBinding.setEvent(event);
+        }
+
+        @Override
+        public void onClick(View v) {
+            resultsClickListener.onResultItemClicked(eventsList.get(getAdapterPosition()));
         }
     }
 }

@@ -2,12 +2,15 @@ package com.ndanda.homeaway.di;
 
 import android.app.Application;
 import android.arch.lifecycle.ViewModelProvider;
+import android.arch.persistence.room.Room;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ndanda.homeaway.AppExecutors;
 import com.ndanda.homeaway.HomeAwayApplication;
 import com.ndanda.homeaway.api.ApiService;
+import com.ndanda.homeaway.repository.FavouriteDao;
+import com.ndanda.homeaway.repository.HomeAwayDatabase;
 import com.ndanda.homeaway.repository.HomeAwayRepository;
 import com.ndanda.homeaway.utils.LiveDataCallAdapterFactory;
 import com.ndanda.homeaway.viewmodel.HomeAwayViewModelFactory;
@@ -54,10 +57,35 @@ public class ApplicationModule {
         return new AppExecutors();
     }
 
+
+    @Provides
+    @Named("dataBase")
+    String providesDatabasePath(){
+        return "HomeAway.db";
+    }
+
+    @Singleton
+    @Provides
+    HomeAwayDatabase provideHomeAwayDatabase(Application application, @Named("dataBase") String databaseName){
+        return Room.databaseBuilder(
+                application,
+                HomeAwayDatabase.class,
+                databaseName)
+                .fallbackToDestructiveMigration()
+                .build();
+    }
+
+
+    @Singleton
+    @Provides
+    FavouriteDao provideFavoriteDao(HomeAwayDatabase homeAwayDatabase) {
+        return homeAwayDatabase.favouriteDao();
+    }
+
     @Provides
     @Singleton
-    HomeAwayRepository provideHomeAloneRepository(AppExecutors appExecutors, ApiService apiService){
-        return new HomeAwayRepository(appExecutors,apiService);
+    HomeAwayRepository provideHomeAloneRepository(AppExecutors appExecutors, ApiService apiService,FavouriteDao favouriteDao){
+        return new HomeAwayRepository(appExecutors,apiService,favouriteDao);
     }
 
     @Provides

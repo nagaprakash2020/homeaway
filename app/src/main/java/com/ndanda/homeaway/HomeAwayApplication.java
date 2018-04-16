@@ -2,6 +2,7 @@ package com.ndanda.homeaway;
 
 import android.app.Application;
 
+import com.facebook.stetho.Stetho;
 import com.ndanda.homeaway.di.ApplicationComponent;
 import com.ndanda.homeaway.di.ApplicationModule;
 import com.ndanda.homeaway.di.DaggerApplicationComponent;
@@ -21,6 +22,10 @@ public class HomeAwayApplication extends Application{
         applicationComponent = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this))
                 .build();
+
+        if(BuildConfig.DEBUG) {
+            Stetho.initializeWithDefaults(this);
+        }
 
     }
 

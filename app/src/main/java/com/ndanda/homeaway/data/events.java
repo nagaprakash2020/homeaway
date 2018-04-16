@@ -1,11 +1,23 @@
 package com.ndanda.homeaway.data;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
+
 import java.util.List;
 
-public class events {
+@Entity
+public class events implements Parcelable{
 
+    @Ignore
     private links[] links;
+    @NonNull
+    @PrimaryKey
     private int id;
+    @Ignore
     private stats stats;
     private String title;
     private String announceDate;
@@ -15,14 +27,49 @@ public class events {
     private String datetimeLocal;
     private String visibleUntilUtc;
     private boolean timeTbd;
+    @Ignore
     private List<taxonomies> taxonomies;
+    @Ignore
     private List<performers> performers;
     private String url;
     private String createdAt;
+    @Ignore
     private venue venue;
     private String shortTitle;
     private String datetimeUtc;
     private boolean datetimeTbd;
+
+    public events(){}
+
+    @Ignore
+    protected events(Parcel in) {
+        id = in.readInt();
+        title = in.readString();
+        announceDate = in.readString();
+        score = in.readDouble();
+        dateTbd = in.readByte() != 0;
+        type = in.readString();
+        datetimeLocal = in.readString();
+        visibleUntilUtc = in.readString();
+        timeTbd = in.readByte() != 0;
+        url = in.readString();
+        createdAt = in.readString();
+        shortTitle = in.readString();
+        datetimeUtc = in.readString();
+        datetimeTbd = in.readByte() != 0;
+    }
+
+    public static final Creator<events> CREATOR = new Creator<events>() {
+        @Override
+        public events createFromParcel(Parcel in) {
+            return new events(in);
+        }
+
+        @Override
+        public events[] newArray(int size) {
+            return new events[size];
+        }
+    };
 
     public links[] getLinks() {
         return links;
@@ -144,5 +191,28 @@ public class events {
     }
     public void setDatetimeTbd(boolean input){
         this.datetimeTbd = input;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(title);
+        dest.writeString(announceDate);
+        dest.writeDouble(score);
+        dest.writeByte((byte) (dateTbd ? 1 : 0));
+        dest.writeString(type);
+        dest.writeString(datetimeLocal);
+        dest.writeString(visibleUntilUtc);
+        dest.writeByte((byte) (timeTbd ? 1 : 0));
+        dest.writeString(url);
+        dest.writeString(createdAt);
+        dest.writeString(shortTitle);
+        dest.writeString(datetimeUtc);
+        dest.writeByte((byte) (datetimeTbd ? 1 : 0));
     }
 }

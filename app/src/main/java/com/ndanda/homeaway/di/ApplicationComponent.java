@@ -21,5 +21,4 @@ public interface ApplicationComponent extends AndroidInjector<HomeAwayApplicatio
 
     Application exposeApplication();
     void inject(LandingActivity landingActivity);
-    void inject(ResultsAdapter resultsAdapter);
 }
