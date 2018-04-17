@@ -30,7 +30,6 @@ ResultDetailFragment.ResultsDetailFragmentListener{
     SearchFragment searchFragment;
     private Stack<Fragment> fragmentStack;
     public List<events> events;
-    private List<events> favoriteEvents;
     private String currentSearchString;
 
     @Override
@@ -46,16 +45,14 @@ ResultDetailFragment.ResultsDetailFragmentListener{
 
         resultsViewModel = ViewModelProviders.of(this,viewModelFactory).get(ResultsViewModel.class);
 
-        getFavoriteEvents();
-        showSearchFragment();
-    }
+        searchFragment = (SearchFragment) getSupportFragmentManager().findFragmentByTag(SearchFragment.class.getName());
+        if(searchFragment == null)
+            showSearchFragment();
 
-    private void getFavoriteEvents(){
-        resultsViewModel.getFavoriteEvents().observe(this, events -> favoriteEvents = events);
+        fragmentStack.push(searchFragment);
     }
 
     private void showSearchFragment() {
-        searchFragment = (SearchFragment) getSupportFragmentManager().findFragmentByTag(SearchFragment.class.getName());
 
         if(searchFragment == null){
             searchFragment = SearchFragment.newInstance();
@@ -63,7 +60,6 @@ ResultDetailFragment.ResultsDetailFragmentListener{
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.container, searchFragment,SearchFragment.class.getName());
-        fragmentStack.push(searchFragment);
         fragmentTransaction.commit();
     }
 
@@ -84,15 +80,17 @@ ResultDetailFragment.ResultsDetailFragmentListener{
             resultsViewModel.getSeatGeekEvent(searchString).observe(this, seatGeekEventApiResponse -> {
                 if(seatGeekEventApiResponse != null && seatGeekEventApiResponse.body != null){
 
-                    events = seatGeekEventApiResponse.body.getEvents();
+                    resultsViewModel.getFavoriteEvents().observe(LandingActivity.this,favoriteEvents -> {
+                        events = seatGeekEventApiResponse.body.getEvents();
 
-                    for(int i=0; i< events.size(); i++){
-                        if(favoriteEvents.contains(events.get(i))){
-                            events.get(i).setFavorite(true);
+                        for(int i=0; i< events.size(); i++){
+                            if(favoriteEvents.contains(events.get(i))){
+                                events.get(i).setFavorite(true);
+                            }
                         }
-                    }
 
-                    searchFragment.updateSearchResults();
+                        searchFragment.updateSearchResults();
+                    });
                 }
             });
         }
