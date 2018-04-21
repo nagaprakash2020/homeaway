@@ -4,7 +4,9 @@ import android.app.Application;
 
 import com.ndanda.homeaway.HomeAwayApplication;
 import com.ndanda.homeaway.view.LandingActivity;
+import com.ndanda.homeaway.view.ResultDetailFragment;
 import com.ndanda.homeaway.view.ResultsAdapter;
+import com.ndanda.homeaway.view.SearchFragment;
 
 import javax.inject.Singleton;
 
@@ -21,4 +23,6 @@ public interface ApplicationComponent extends AndroidInjector<HomeAwayApplicatio
 
     Application exposeApplication();
     void inject(LandingActivity landingActivity);
+    void inject(ResultDetailFragment resultDetailFragment);
+    void inject(SearchFragment searchFragment);
 }

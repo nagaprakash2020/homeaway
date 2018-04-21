@@ -1,10 +1,13 @@
 package com.ndanda.homeaway.view;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -13,45 +16,32 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.ndanda.homeaway.HomeAwayApplication;
 import com.ndanda.homeaway.R;
 import com.ndanda.homeaway.data.events;
 import com.ndanda.homeaway.databinding.FragmentSearchBinding;
+import com.ndanda.homeaway.viewmodel.ResultsViewModel;
 
 import java.util.List;
 
-public class SearchFragment extends Fragment implements ResultsAdapter.ResultsClickListener{
+import javax.inject.Inject;
+
+public class SearchFragment extends Fragment implements ResultsAdapter.ResultsClickListener {
+
+    @Inject
+    ViewModelProvider.Factory viewModelFactory;
 
     private OnSearchFragmentInteractionListener mListener;
     FragmentSearchBinding fragmentSearchBinding;
     ResultsAdapter resultsAdapter;
+    ResultsViewModel resultsViewModel;
 
     public SearchFragment() {
         // Required empty public constructor
     }
 
     public static SearchFragment newInstance() {
-        SearchFragment fragment = new SearchFragment();
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        fragmentSearchBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_search,container,false);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
-
-        resultsAdapter = new ResultsAdapter(getContext(),this);
-        fragmentSearchBinding.searchResultsList.setLayoutManager(mLayoutManager);
-        fragmentSearchBinding.searchResultsList.setAdapter(resultsAdapter);
-        fragmentSearchBinding.searchBar.addTextChangedListener(new CustomTextChangeListener());
-
-        return fragmentSearchBinding.getRoot();
+        return new SearchFragment();
     }
 
     @Override
@@ -66,9 +56,32 @@ public class SearchFragment extends Fragment implements ResultsAdapter.ResultsCl
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ((HomeAwayApplication) getActivity().getApplication())
+                .getApplicationComponent()
+                .inject(this);
+        resultsViewModel = ViewModelProviders.of(getActivity(), viewModelFactory).get(ResultsViewModel.class);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        fragmentSearchBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
+
+        resultsAdapter = new ResultsAdapter(getContext(), this);
+        fragmentSearchBinding.searchResultsList.setLayoutManager(mLayoutManager);
+        fragmentSearchBinding.searchResultsList.setAdapter(resultsAdapter);
+        fragmentSearchBinding.searchBar.addTextChangedListener(new CustomTextChangeListener());
+
+        return fragmentSearchBinding.getRoot();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-        updateSearchResults();
     }
 
     @Override
@@ -83,9 +96,8 @@ public class SearchFragment extends Fragment implements ResultsAdapter.ResultsCl
     }
 
 
-    public void updateSearchResults(){
-        if(getActivity() != null)
-            resultsAdapter.setEventsList(((LandingActivity)getActivity()).events);
+    public void updateSearchResults(List<events> eventsList) {
+        resultsAdapter.setEventsList(eventsList);
     }
 
     @Override
@@ -104,7 +116,6 @@ public class SearchFragment extends Fragment implements ResultsAdapter.ResultsCl
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnSearchFragmentInteractionListener {
-        void onSearchStringUpdated(String searchString);
         void onSearchItemResultSelected(events event);
     }
 
@@ -121,8 +132,15 @@ public class SearchFragment extends Fragment implements ResultsAdapter.ResultsCl
 
         @Override
         public void afterTextChanged(Editable s) {
-            if(mListener != null)
-                mListener.onSearchStringUpdated(s.toString());
+
+            resultsViewModel.setSearchString(s.toString());
+
+            resultsViewModel.getSearchResultsWithFavorites().observe(getActivity(), new Observer<List<events>>() {
+                @Override
+                public void onChanged(@Nullable List<events> eventsList) {
+                    updateSearchResults(eventsList);
+                }
+            });
         }
     }
 }

@@ -1,5 +1,7 @@
 package com.ndanda.homeaway.view;
 
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -8,44 +10,42 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.ndanda.homeaway.HomeAwayApplication;
 import com.ndanda.homeaway.R;
-import com.ndanda.homeaway.data.events;
 import com.ndanda.homeaway.databinding.FragmentResultDetailBinding;
+import com.ndanda.homeaway.viewmodel.ResultsViewModel;
+
+import javax.inject.Inject;
 
 public class ResultDetailFragment extends Fragment implements View.OnClickListener{
 
-    private events event;
-    private String searchString;
+    @Inject
+    ViewModelProvider.Factory viewModelFactory;
+
     private ResultsDetailFragmentListener mListener;
     private FragmentResultDetailBinding fragmentResultDetailBinding;
-
-    private static final String SEARCH_STRING = "SearchString";
+    private ResultsViewModel resultsViewModel;
 
     public interface ResultsDetailFragmentListener{
-        void onFavoriteAdded(events events);
-        void onFavoriteRemoved(events events);
     }
 
     public ResultDetailFragment() {
         // Required empty public constructor
     }
 
-    public static ResultDetailFragment newInstance(events event,String searchString) {
-        ResultDetailFragment fragment = new ResultDetailFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(events.class.getName(), event);
-        args.putString(SEARCH_STRING,searchString);
-        fragment.setArguments(args);
-        return fragment;
+    public static ResultDetailFragment newInstance() {
+        return new ResultDetailFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            event = getArguments().getParcelable(events.class.getName());
-            searchString = getArguments().getString(SEARCH_STRING);
-        }
+
+        ((HomeAwayApplication) getActivity().getApplication())
+                .getApplicationComponent()
+                .inject(this);
+
+        resultsViewModel = ViewModelProviders.of(getActivity(),viewModelFactory).get(ResultsViewModel.class);
     }
 
     @Override
@@ -53,9 +53,9 @@ public class ResultDetailFragment extends Fragment implements View.OnClickListen
                              Bundle savedInstanceState) {
         fragmentResultDetailBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_result_detail,container,false);
 
-        fragmentResultDetailBinding.setEvent(event);
-        fragmentResultDetailBinding.setSearchString(searchString);
-        fragmentResultDetailBinding.favorite.setSelected(event.getFavorite());
+        fragmentResultDetailBinding.setResultsViewModel(resultsViewModel);
+        fragmentResultDetailBinding.backButton.setOnClickListener(this);
+        fragmentResultDetailBinding.favorite.setSelected(resultsViewModel.getSelectedEvent().getValue().getFavorite());
         fragmentResultDetailBinding.favorite.setOnClickListener(this);
         return fragmentResultDetailBinding.getRoot();
     }
@@ -83,14 +83,20 @@ public class ResultDetailFragment extends Fragment implements View.OnClickListen
 
     @Override
     public void onClick(View v) {
-        if(!fragmentResultDetailBinding.favorite.isSelected()){
-            fragmentResultDetailBinding.favorite.setSelected(true);
-            event.setFavorite(true);
-            mListener.onFavoriteAdded(event);
-        }else {
-            fragmentResultDetailBinding.favorite.setSelected(false);
-            event.setFavorite(false);
-            mListener.onFavoriteRemoved(event);
+
+        switch (v.getId()){
+            case R.id.favorite:
+                if(!fragmentResultDetailBinding.favorite.isSelected()){
+                    fragmentResultDetailBinding.favorite.setSelected(true);
+                    resultsViewModel.addEventToFavorite();
+                }else {
+                    fragmentResultDetailBinding.favorite.setSelected(false);
+                    resultsViewModel.removeEventFromFavorite();
+                }
+                break;
+            case R.id.back_button:
+                getActivity().onBackPressed();
+                break;
         }
 
     }

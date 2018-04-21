@@ -5,7 +5,6 @@ import android.arch.lifecycle.LiveData;
 import com.ndanda.homeaway.data.SeatGeekEvent;
 
 import retrofit2.http.GET;
-import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
