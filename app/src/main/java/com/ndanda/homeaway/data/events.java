@@ -8,10 +8,9 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import java.util.List;
-import java.util.Objects;
 
 @Entity
-public class events implements Parcelable{
+public class events implements Parcelable {
 
     @Ignore
     private links[] links;
@@ -25,7 +24,7 @@ public class events implements Parcelable{
     private double score;
     private boolean dateTbd;
     private String type;
-    private String datetimeLocal;
+    private String datetime_local;
     private String visibleUntilUtc;
     private boolean timeTbd;
     @Ignore
@@ -42,7 +41,8 @@ public class events implements Parcelable{
     @Ignore
     private boolean favorite;
 
-    public events(){}
+    public events() {
+    }
 
     @Ignore
     protected events(Parcel in) {
@@ -52,7 +52,7 @@ public class events implements Parcelable{
         score = in.readDouble();
         dateTbd = in.readByte() != 0;
         type = in.readString();
-        datetimeLocal = in.readString();
+        datetime_local = in.readString();
         visibleUntilUtc = in.readString();
         timeTbd = in.readByte() != 0;
         url = in.readString();
@@ -82,64 +82,83 @@ public class events implements Parcelable{
         this.links = links;
     }
 
-    public int getId(){
+    public int getId() {
         return id;
     }
-    public void setId(int input){
+
+    public void setId(int input) {
         this.id = input;
     }
-    public stats getStats(){
+
+    public stats getStats() {
         return stats;
     }
-    public void setStats(stats input){
+
+    public void setStats(stats input) {
         this.stats = input;
     }
-    public String getTitle(){
+
+    public String getTitle() {
         return title;
     }
-    public void setTitle(String input){
+
+    public void setTitle(String input) {
         this.title = input;
     }
-    public String getAnnounceDate(){
+
+    public String getAnnounceDate() {
         return announceDate;
     }
-    public void setAnnounceDate(String input){
+
+    public void setAnnounceDate(String input) {
         this.announceDate = input;
     }
-    public double getScore(){
+
+    public double getScore() {
         return score;
     }
-    public void setScore(double input){
+
+    public void setScore(double input) {
         this.score = input;
     }
-    public boolean getDateTbd(){
+
+    public boolean getDateTbd() {
         return dateTbd;
     }
-    public void setDateTbd(boolean input){
+
+    public void setDateTbd(boolean input) {
         this.dateTbd = input;
     }
-    public String getType(){
+
+    public String getType() {
         return type;
     }
-    public void setType(String input){
+
+    public void setType(String input) {
         this.type = input;
     }
-    public String getDatetimeLocal(){
-        return datetimeLocal;
+
+    public String getDatetime_local() {
+        return datetime_local;
     }
-    public void setDatetimeLocal(String input){
-        this.datetimeLocal = input;
+
+    public void setDatetime_local(String datetime_local) {
+        this.datetime_local = datetime_local;
     }
-    public String getVisibleUntilUtc(){
+
+    public String getVisibleUntilUtc() {
         return visibleUntilUtc;
     }
-    public void setVisibleUntilUtc(String input){
+
+    public void setVisibleUntilUtc(String input) {
         this.visibleUntilUtc = input;
     }
-    public boolean getTimeTbd(){
+
+    public boolean getTimeTbd() {
         return timeTbd;
     }
-    public void setTimeTbd(boolean input){
+
+    public void setTimeTbd(boolean input) {
         this.timeTbd = input;
     }
 
@@ -159,44 +178,61 @@ public class events implements Parcelable{
         this.performers = performers;
     }
 
-    public String getUrl(){
+    public String getUrl() {
         return url;
     }
-    public void setUrl(String input){
+
+    public void setUrl(String input) {
         this.url = input;
     }
-    public String getCreatedAt(){
+
+    public String getCreatedAt() {
         return createdAt;
     }
-    public void setCreatedAt(String input){
+
+    public void setCreatedAt(String input) {
         this.createdAt = input;
     }
-    public venue getVenue(){
+
+    public venue getVenue() {
         return venue;
     }
-    public void setVenue(venue input){
+
+    public void setVenue(venue input) {
         this.venue = input;
     }
-    public String getShortTitle(){
+
+    public String getShortTitle() {
         return shortTitle;
     }
-    public void setShortTitle(String input){
+
+    public void setShortTitle(String input) {
         this.shortTitle = input;
     }
-    public String getDatetimeUtc(){
+
+    public String getDatetimeUtc() {
         return datetimeUtc;
     }
-    public void setDatetimeUtc(String input){
+
+    public void setDatetimeUtc(String input) {
         this.datetimeUtc = input;
     }
-    public boolean getDatetimeTbd(){
+
+    public boolean getDatetimeTbd() {
         return datetimeTbd;
     }
-    public void setDatetimeTbd(boolean input){
+
+    public void setDatetimeTbd(boolean input) {
         this.datetimeTbd = input;
     }
-    public boolean getFavorite(){return this.favorite;}
-    public void setFavorite(boolean favorite){this.favorite = favorite;}
+
+    public boolean getFavorite() {
+        return this.favorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
+    }
 
     @Override
     public int describeContents() {
@@ -211,7 +247,7 @@ public class events implements Parcelable{
         dest.writeDouble(score);
         dest.writeByte((byte) (dateTbd ? 1 : 0));
         dest.writeString(type);
-        dest.writeString(datetimeLocal);
+        dest.writeString(datetime_local);
         dest.writeString(visibleUntilUtc);
         dest.writeByte((byte) (timeTbd ? 1 : 0));
         dest.writeString(url);

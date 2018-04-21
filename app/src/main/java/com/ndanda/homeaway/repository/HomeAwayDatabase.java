@@ -5,7 +5,7 @@ import android.arch.persistence.room.RoomDatabase;
 
 import com.ndanda.homeaway.data.events;
 
-@Database(entities = {events.class},version = 1,exportSchema = false)
+@Database(entities = {events.class},version = 2,exportSchema = false)
 public abstract class HomeAwayDatabase extends RoomDatabase{
 
     public abstract FavouriteDao favouriteDao();

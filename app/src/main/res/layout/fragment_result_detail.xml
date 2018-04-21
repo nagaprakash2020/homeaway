@@ -1,5 +1,6 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto">
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <variable
@@ -63,7 +64,7 @@
                 android:id="@+id/event_image"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:src="@mipmap/ic_launcher" />
+                app:image="@{resultsViewModel.getSelectedEvent().getValue().getPerformers().get(0).getImage()}" />
 
             <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/event_title"
@@ -90,6 +91,18 @@
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
                 android:text="@{@string/location(resultsViewModel.getSelectedEvent().getValue().getVenue().getCity(),resultsViewModel.getSelectedEvent().getValue().getVenue().getState())}"/>
+
+            <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/event_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignEnd="@+id/event_image"
+                android:layout_toEndOf="@+id/event_image"
+                android:layout_below="@+id/event_venue"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                app:date="@{resultsViewModel.getSelectedEvent().getValue().getDatetime_local()}" />
 
         </RelativeLayout>
 
