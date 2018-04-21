@@ -38,6 +38,14 @@ ResultDetailFragment.ResultsDetailFragmentListener{
         super.onCreate(savedInstanceState);
 
         fragmentStack = new Stack<>();
+        if(savedInstanceState != null){
+            for(int i=0; i< getSupportFragmentManager().getFragments().size(); i++){
+                Fragment fragment = getSupportFragmentManager().getFragments().get(i);
+                if(fragment instanceof SearchFragment || fragment instanceof ResultDetailFragment)
+                    fragmentStack.push(getSupportFragmentManager().getFragments().get(i));
+            }
+        }
+
         activityLandingBinding = DataBindingUtil.setContentView(this,R.layout.activity_landing);
 
         resultsViewModel = ViewModelProviders.of(this,viewModelFactory).get(ResultsViewModel.class);
@@ -46,7 +54,6 @@ ResultDetailFragment.ResultsDetailFragmentListener{
         if(searchFragment == null)
             showSearchFragment();
 
-        fragmentStack.push(searchFragment);
     }
 
     private void showSearchFragment() {
@@ -57,6 +64,7 @@ ResultDetailFragment.ResultsDetailFragmentListener{
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.container, searchFragment,SearchFragment.class.getName());
+        fragmentStack.push(searchFragment);
         fragmentTransaction.commit();
     }
 

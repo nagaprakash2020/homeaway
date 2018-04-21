@@ -34,7 +34,6 @@ public class SearchFragment extends Fragment implements ResultsAdapter.ResultsCl
     private OnSearchFragmentInteractionListener mListener;
     FragmentSearchBinding fragmentSearchBinding;
     ResultsAdapter resultsAdapter;
-    ResultsViewModel resultsViewModel;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -61,7 +60,6 @@ public class SearchFragment extends Fragment implements ResultsAdapter.ResultsCl
         ((HomeAwayApplication) getActivity().getApplication())
                 .getApplicationComponent()
                 .inject(this);
-        resultsViewModel = ViewModelProviders.of(getActivity(), viewModelFactory).get(ResultsViewModel.class);
     }
 
     @Override
@@ -133,14 +131,17 @@ public class SearchFragment extends Fragment implements ResultsAdapter.ResultsCl
         @Override
         public void afterTextChanged(Editable s) {
 
-            resultsViewModel.setSearchString(s.toString());
+            if(isAdded()){
+                ViewModelProviders.of(getActivity(), viewModelFactory).get(ResultsViewModel.class).setSearchString(s.toString());
 
-            resultsViewModel.getSearchResultsWithFavorites().observe(getActivity(), new Observer<List<events>>() {
-                @Override
-                public void onChanged(@Nullable List<events> eventsList) {
-                    updateSearchResults(eventsList);
-                }
-            });
+                ViewModelProviders.of(getActivity(), viewModelFactory).get(ResultsViewModel.class).getSearchResultsWithFavorites().observe(getActivity(), new Observer<List<events>>() {
+                    @Override
+                    public void onChanged(@Nullable List<events> eventsList) {
+                        updateSearchResults(eventsList);
+                    }
+                });
+            }
+
         }
     }
 }

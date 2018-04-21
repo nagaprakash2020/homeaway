@@ -24,7 +24,6 @@ public class ResultDetailFragment extends Fragment implements View.OnClickListen
 
     private ResultsDetailFragmentListener mListener;
     private FragmentResultDetailBinding fragmentResultDetailBinding;
-    private ResultsViewModel resultsViewModel;
 
     public interface ResultsDetailFragmentListener{
     }
@@ -45,13 +44,14 @@ public class ResultDetailFragment extends Fragment implements View.OnClickListen
                 .getApplicationComponent()
                 .inject(this);
 
-        resultsViewModel = ViewModelProviders.of(getActivity(),viewModelFactory).get(ResultsViewModel.class);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         fragmentResultDetailBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_result_detail,container,false);
+
+        ResultsViewModel resultsViewModel = ViewModelProviders.of(getActivity(),viewModelFactory).get(ResultsViewModel.class);
 
         fragmentResultDetailBinding.setResultsViewModel(resultsViewModel);
         fragmentResultDetailBinding.backButton.setOnClickListener(this);
@@ -88,10 +88,10 @@ public class ResultDetailFragment extends Fragment implements View.OnClickListen
             case R.id.favorite:
                 if(!fragmentResultDetailBinding.favorite.isSelected()){
                     fragmentResultDetailBinding.favorite.setSelected(true);
-                    resultsViewModel.addEventToFavorite();
+                    ViewModelProviders.of(getActivity(),viewModelFactory).get(ResultsViewModel.class).addEventToFavorite();
                 }else {
                     fragmentResultDetailBinding.favorite.setSelected(false);
-                    resultsViewModel.removeEventFromFavorite();
+                    ViewModelProviders.of(getActivity(),viewModelFactory).get(ResultsViewModel.class).removeEventFromFavorite();
                 }
                 break;
             case R.id.back_button:
