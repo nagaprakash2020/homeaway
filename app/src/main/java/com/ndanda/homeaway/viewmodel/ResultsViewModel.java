@@ -11,6 +11,7 @@ import com.ndanda.homeaway.api.ApiResponse;
 import com.ndanda.homeaway.data.SeatGeekEvent;
 import com.ndanda.homeaway.data.events;
 import com.ndanda.homeaway.repository.HomeAwayRepository;
+import com.ndanda.homeaway.utils.AbsentLiveData;
 
 import java.util.List;
 import java.util.Locale;
@@ -33,7 +34,12 @@ public class ResultsViewModel extends ViewModel {
         /**
          *  @searchResultEvents will be updated when there is a change in @searchString
          */
-        searchResultEvents = Transformations.switchMap(searchString, search -> repository.getResults(searchString.getValue()));
+        searchResultEvents = Transformations.switchMap(searchString, search -> {
+            if(searchString.getValue() == null || searchString.getValue().isEmpty()){
+                return AbsentLiveData.create();
+            }else
+                return repository.getResults(searchString.getValue());
+        });
 
 
         /**
@@ -53,6 +59,8 @@ public class ResultsViewModel extends ViewModel {
 
                     searchResultsWithFavorites.setValue(searchResultEvents.getValue().body.getEvents());
                 }
+            }else if(searchResultEvents != null && searchResultEvents.getValue() == null){
+                searchResultsWithFavorites.setValue(null);
             }
         });
 

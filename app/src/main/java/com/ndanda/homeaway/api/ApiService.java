@@ -15,6 +15,5 @@ public interface ApiService {
 
     @GET("events")
     LiveData<ApiResponse<SeatGeekEvent>> getEvents(
-            @Query("q") String searchString,
-            @Query("client_id") String clientId);
+            @Query("q") String searchString);
 }

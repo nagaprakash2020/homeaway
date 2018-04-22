@@ -13,6 +13,7 @@ import com.ndanda.homeaway.repository.FavouriteDao;
 import com.ndanda.homeaway.repository.HomeAwayDatabase;
 import com.ndanda.homeaway.repository.HomeAwayRepository;
 import com.ndanda.homeaway.utils.LiveDataCallAdapterFactory;
+import com.ndanda.homeaway.utils.RetrofitApiKeyInterceptor;
 import com.ndanda.homeaway.viewmodel.HomeAwayViewModelFactory;
 import com.ndanda.homeaway.viewmodel.ResultsViewModel;
 
@@ -21,6 +22,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -96,10 +98,11 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    OkHttpClient.Builder provideOkHttpClientBuilder(){
+    OkHttpClient.Builder provideOkHttpClientBuilder(Interceptor apiKeyInterceptor){
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        httpClient.addInterceptor(apiKeyInterceptor);
         httpClient.addInterceptor(logging);
 
         return httpClient;
@@ -123,6 +126,12 @@ public class ApplicationModule {
                 .client(okHttpClientBuilder.build())
                 .build();
 
+    }
+
+    @Provides
+    @Singleton
+    Interceptor provideApiKeyInterceptor(){
+        return new RetrofitApiKeyInterceptor();
     }
 
     @Provides

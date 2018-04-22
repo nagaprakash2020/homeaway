@@ -60,8 +60,7 @@ public class HomeAwayRepository {
     }
 
     public LiveData<ApiResponse<SeatGeekEvent>> getResults(String searchString){
-        String clientID = "MTEyMTMxNzd8MTUyMzY1MzEyOS45NA";
-        return apiService.getEvents(searchString,clientID);
+        return apiService.getEvents(searchString);
     }
 
     public void saveFavoriteEvent(events event){
